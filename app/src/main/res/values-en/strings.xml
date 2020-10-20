@@ -2,5 +2,12 @@
 <resources>
     <string name="app_name">Active Citizen</string>
     <string name="notasPessoais">Personal Notes</string>
-    <string name="criarNota">Create Note</string>
+    <string name="criarNotaPessoais">Create Personal Note</string>
+    <string name="guardar">Save</string>
+    <string name="titulo">Title</string>
+    <string name="subtitulo">Subtitle</string>
+    <string name="descricao">Description</string>
+    <string name="hintTitulo">Sewer problem</string>
+    <string name="hintSubtitulo">Sewer problems street</string>
+    <string name="hintDescricao">Description about the problem and more</string>
 </resources>

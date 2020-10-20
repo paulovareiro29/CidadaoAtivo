@@ -1,8 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/criarNota"
-        android:title="@string/criarNotaPessoais"
+        android:id="@+id/guardarNota"
+        android:title="@string/guardar"
         app:showAsAction="always">
     </item>
 </menu>
