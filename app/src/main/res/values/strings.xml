@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">CidadaoAtivo</string>
+    <string name="app_name">Cidadão Ativo</string>
+    <string name="notasPessoais">Notas Pessoais</string>
+    <string name="criarNota">Criar Nota</string>
 </resources>
