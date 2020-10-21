@@ -6,9 +6,12 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.notas_pessoais_recyclerline.view.*
 import androidx.recyclerview.widget.RecyclerView
 import ipvc.estg.cidadaoativo.R
-import ipvc.estg.cidadaoativo.dataclasses.NotaPessoal
+import ipvc.estg.cidadaoativo.entities.NotaPessoalEntity
 
-class NotaPessoalLineAdapter(val list: ArrayList<NotaPessoal>): RecyclerView.Adapter<LineViewHolder>() {
+class NotaPessoalLineAdapter(): RecyclerView.Adapter<LineViewHolder>() {
+
+
+    private var list = emptyList<NotaPessoalEntity>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LineViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.notas_pessoais_recyclerline, parent, false)
@@ -27,7 +30,10 @@ class NotaPessoalLineAdapter(val list: ArrayList<NotaPessoal>): RecyclerView.Ada
         holder.descricao.text = currentNota.descricao
     }
 
-
+    internal fun setNotas(notasPessoais: List<NotaPessoalEntity>){
+        this.list = notasPessoais
+        notifyDataSetChanged()
+    }
 }
 
 class LineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
