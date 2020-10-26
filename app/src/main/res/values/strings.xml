@@ -9,4 +9,5 @@
     <string name="hintTitulo">Problema de esgoto</string>
     <string name="hintSubtitulo">Rua dos problemas de esgoto</string>
     <string name="hintDescricao">Descrição sobre o problema e mais informações adicionais</string>
+    <string name="validacaoNotaPessoal">Campos não podem estar vazios</string>
 </resources>

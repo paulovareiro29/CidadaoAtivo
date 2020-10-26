@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.Toast
 
 class CriarNotaPessoal : AppCompatActivity() {
 
@@ -38,7 +39,8 @@ class CriarNotaPessoal : AppCompatActivity() {
                 val replyIntent = Intent()
                 if(TextUtils.isEmpty(editTitulo.text) || TextUtils.isEmpty(editSubtitulo.text) || TextUtils.isEmpty(editDescricao.text)){
                     setResult(Activity.RESULT_CANCELED, replyIntent)
-                }else{
+                    Toast.makeText(this,R.string.validacaoNotaPessoal,Toast.LENGTH_LONG).show()
+                }else {
                     val titulo = editTitulo.text.toString()
                     val subtitulo = editSubtitulo.text.toString()
                     val descricao = editDescricao.text.toString()
@@ -47,8 +49,9 @@ class CriarNotaPessoal : AppCompatActivity() {
                     replyIntent.putExtra("subtitulo", subtitulo)
                     replyIntent.putExtra("descricao", descricao)
                     setResult(Activity.RESULT_OK, replyIntent)
+                    finish()
                 }
-                finish()
+
                 true
             }
             else -> super.onOptionsItemSelected(item)

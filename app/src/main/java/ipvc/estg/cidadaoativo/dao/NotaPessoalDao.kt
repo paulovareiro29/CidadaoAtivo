@@ -18,4 +18,6 @@ interface NotaPessoalDao {
 
     @Query("DELETE FROM notas_pessoais_table")
     suspend fun deleteAll()
+
+    //acrescentar um de delete e update
 }

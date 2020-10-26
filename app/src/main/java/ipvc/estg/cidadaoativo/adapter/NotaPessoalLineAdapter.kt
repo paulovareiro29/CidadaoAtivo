@@ -28,6 +28,7 @@ class NotaPessoalLineAdapter(): RecyclerView.Adapter<LineViewHolder>() {
         holder.titulo.text = currentNota.titulo
         holder.subtitulo.text = currentNota.subtitulo
         holder.descricao.text = currentNota.descricao
+        //acrescentar botao para guardar o id da nota num botao ou algo para editar e delete
     }
 
     internal fun setNotas(notasPessoais: List<NotaPessoalEntity>){
