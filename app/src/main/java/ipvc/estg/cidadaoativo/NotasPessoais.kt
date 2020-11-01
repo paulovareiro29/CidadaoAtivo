@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -72,22 +73,11 @@ class NotasPessoais : AppCompatActivity(),  OnNotaPessoalListener{
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean{
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_notas_pessoais, menu)
-        return true;
+    fun onFabClick(view: View){
+        val intent = Intent(this, CriarNotaPessoal::class.java)
+        startActivityForResult(intent, newNotaActivityRequestCode)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
-            R.id.criarNota -> {
-                val intent = Intent(this, CriarNotaPessoal::class.java)
-                startActivityForResult(intent, newNotaActivityRequestCode)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun onNotaPessoalDeleteClick(nota: NotaPessoalEntity, position: Int) {
         Toast.makeText(this, "ID: ${nota.id}",Toast.LENGTH_SHORT).show()
