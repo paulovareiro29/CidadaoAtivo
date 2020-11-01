@@ -1,10 +1,7 @@
 package ipvc.estg.cidadaoativo.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import ipvc.estg.cidadaoativo.entities.NotaPessoalEntity
 
 @Dao
@@ -20,4 +17,10 @@ interface NotaPessoalDao {
     suspend fun deleteAll()
 
     //acrescentar um de delete e update
+    @Delete
+    suspend fun delete(notaPessoal: NotaPessoalEntity)
+
+    @Update
+    suspend fun update(notaPessoal: NotaPessoalEntity)
+
 }

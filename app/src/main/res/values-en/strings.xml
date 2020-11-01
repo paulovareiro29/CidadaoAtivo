@@ -11,4 +11,5 @@
     <string name="hintSubtitulo">Sewer problems street</string>
     <string name="hintDescricao">Description about the problem and more</string>
     <string name="validacaoNotaPessoal">Fields cannot be empty</string>
+    <string name="remover">Delete</string>
 </resources>

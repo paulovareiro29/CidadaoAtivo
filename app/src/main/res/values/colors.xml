@@ -6,4 +6,5 @@
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="itemBackground">#F3F3F3</color>
     <color name="editTextBackground">#FFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

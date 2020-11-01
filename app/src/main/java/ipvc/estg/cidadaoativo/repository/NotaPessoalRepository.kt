@@ -13,4 +13,12 @@ class NotaPessoalRepository(private val notaPessoalDao: NotaPessoalDao) {
         notaPessoalDao.insert(notaPessoalEntity)
     }
 
+    suspend fun delete(notaPessoalEntity: NotaPessoalEntity){
+        notaPessoalDao.delete(notaPessoalEntity)
+    }
+
+    suspend fun update(notaPessoalEntity: NotaPessoalEntity){
+        notaPessoalDao.update(notaPessoalEntity)
+    }
+
 }

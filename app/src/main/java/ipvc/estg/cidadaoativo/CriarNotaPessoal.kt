@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -17,6 +18,7 @@ class CriarNotaPessoal : AppCompatActivity() {
     private lateinit var editSubtitulo: EditText
     private lateinit var editDescricao: EditText
 
+    private var isEditing: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,16 @@ class CriarNotaPessoal : AppCompatActivity() {
         editTitulo = findViewById(R.id.editTitulo)
         editSubtitulo = findViewById(R.id.editSubtitulo)
         editDescricao = findViewById(R.id.editDescricao)
+
+        Log.d("TAG","Criar nota pessoal")
+
+        if(intent.getIntExtra("id",-1) != -1){
+            Log.d("TAG","A editar nota pessoal")
+            isEditing = true;
+            editTitulo.setText(intent.getStringExtra("titulo"))
+            editSubtitulo.setText(intent.getStringExtra("subtitulo"))
+            editDescricao.setText(intent.getStringExtra("descricao"))
+        }
 
     }
 
@@ -45,6 +57,7 @@ class CriarNotaPessoal : AppCompatActivity() {
                     val subtitulo = editSubtitulo.text.toString()
                     val descricao = editDescricao.text.toString()
 
+                    if(isEditing)  replyIntent.putExtra("id", intent.getIntExtra("id",-1))
                     replyIntent.putExtra("titulo", titulo)
                     replyIntent.putExtra("subtitulo", subtitulo)
                     replyIntent.putExtra("descricao", descricao)

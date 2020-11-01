@@ -24,4 +24,12 @@ class NotaPessoalViewModel(application: Application): AndroidViewModel(applicati
     fun insert(notaPessoalEntity: NotaPessoalEntity) = viewModelScope.launch(Dispatchers.IO)  {
         repository.insert(notaPessoalEntity)
     }
+
+    fun delete(notaPessoalEntity: NotaPessoalEntity) = viewModelScope.launch(Dispatchers.IO) {
+        repository.delete(notaPessoalEntity)
+    }
+
+    fun update(notaPessoalEntity: NotaPessoalEntity) = viewModelScope.launch(Dispatchers.IO){
+        repository.update(notaPessoalEntity)
+    }
 }
