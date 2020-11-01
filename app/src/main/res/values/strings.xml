@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">CidadaoAtivo</string>
+    <string name="app_name">Cidadão Ativo</string>
+    <string name="notasPessoais">Notas Pessoais</string>
+    <string name="criarNotaPessoais">Criar Nota Pessoal</string>
+    <string name="guardar">Guardar</string>
+    <string name="titulo">Título</string>
+    <string name="subtitulo">Subtítulo</string>
+    <string name="descricao">Descrição</string>
+    <string name="hintTitulo">Problema de esgoto</string>
+    <string name="hintSubtitulo">Rua dos problemas de esgoto</string>
+    <string name="hintDescricao">Descrição sobre o problema e mais informações adicionais</string>
+    <string name="validacaoNotaPessoal">Campos não podem estar vazios</string>
+    <string name="remover">Remover</string>
 </resources>
