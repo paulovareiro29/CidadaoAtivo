@@ -38,24 +38,44 @@
         />
 
     <LinearLayout
+        android:paddingTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/descricao"
-        android:gravity="end">
+        android:layout_below="@+id/descricao">
 
-        <Button
-        android:id="@+id/deleteButton"
-        android:layout_width="60dp"
-        android:layout_height="25dp"
-        android:background="@drawable/deletebutton"
-        android:text="delete" />
 
-        <Button
-            android:id="@+id/editButton"
-            android:layout_width="60dp"
-            android:layout_height="25dp"
-            android:background="@drawable/deletebutton"
-            android:text="Edit" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="left">
+
+            <ImageButton
+                android:id="@+id/editButton"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="@drawable/deletebutton"
+                android:src="@android:drawable/ic_menu_edit"
+                android:text="@string/editar" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right">
+
+            <ImageButton
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="@drawable/deletebutton"
+                android:src="@android:drawable/ic_menu_delete"
+                android:text="@string/remover" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </RelativeLayout>

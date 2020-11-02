@@ -11,4 +11,6 @@
     <string name="hintDescricao">Descrição sobre o problema e mais informações adicionais</string>
     <string name="validacaoNotaPessoal">Campos não podem estar vazios</string>
     <string name="remover">Remover</string>
+    <string name="editar">Editar</string>
+    <string name="editarNotaPessoal">Editar nota pessoal</string>
 </resources>

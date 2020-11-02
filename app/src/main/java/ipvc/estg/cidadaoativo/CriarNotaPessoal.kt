@@ -10,10 +10,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 
 class CriarNotaPessoal : AppCompatActivity() {
 
+    private lateinit var activityTitle: TextView
     private lateinit var editTitulo: EditText
     private lateinit var editSubtitulo: EditText
     private lateinit var editDescricao: EditText
@@ -23,15 +25,15 @@ class CriarNotaPessoal : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_criar_nota_pessoal)
+        activityTitle = findViewById(R.id.activityTitleCriarNota)
         editTitulo = findViewById(R.id.editTitulo)
         editSubtitulo = findViewById(R.id.editSubtitulo)
         editDescricao = findViewById(R.id.editDescricao)
 
-        Log.d("TAG","Criar nota pessoal")
-
         if(intent.getIntExtra("id",-1) != -1){
-            Log.d("TAG","A editar nota pessoal")
             isEditing = true;
+            activityTitle.setText(R.string.editarNotaPessoal)
+
             editTitulo.setText(intent.getStringExtra("titulo"))
             editSubtitulo.setText(intent.getStringExtra("subtitulo"))
             editDescricao.setText(intent.getStringExtra("descricao"))

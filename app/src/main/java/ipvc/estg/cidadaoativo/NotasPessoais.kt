@@ -50,9 +50,8 @@ class NotasPessoais : AppCompatActivity(),  OnNotaPessoalListener{
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(data?.equals(null)!!){
-            return;
-        }
+        if(data == null) return;
+
 
         if(requestCode == newNotaActivityRequestCode && resultCode == Activity.RESULT_OK){
             val titulo = data.getStringExtra("titulo")
@@ -65,7 +64,7 @@ class NotasPessoais : AppCompatActivity(),  OnNotaPessoalListener{
         }
 
         if(requestCode == editNotaActivityRequestCode && resultCode == Activity.RESULT_OK){
-            val id = data.getStringExtra("id").toInt()
+            val id = data.getIntExtra("id", -1)
             val titulo = data.getStringExtra("titulo")
             val subtitulo = data.getStringExtra("subtitulo")
             val descricao = data.getStringExtra("descricao")
@@ -80,7 +79,6 @@ class NotasPessoais : AppCompatActivity(),  OnNotaPessoalListener{
 
 
     override fun onNotaPessoalDeleteClick(nota: NotaPessoalEntity, position: Int) {
-        Toast.makeText(this, "ID: ${nota.id}",Toast.LENGTH_SHORT).show()
         notaPessoalViewModel.delete(nota)
     }
 
