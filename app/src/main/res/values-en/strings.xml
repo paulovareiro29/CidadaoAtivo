@@ -12,4 +12,6 @@
     <string name="hintDescricao">Description about the problem and more</string>
     <string name="validacaoNotaPessoal">Fields cannot be empty</string>
     <string name="remover">Delete</string>
+    <string name="editar">Edit</string>
+    <string name="editarNotaPessoal">Edit personal note</string>
 </resources>

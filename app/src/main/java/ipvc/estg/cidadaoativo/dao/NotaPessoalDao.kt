@@ -7,7 +7,7 @@ import ipvc.estg.cidadaoativo.entities.NotaPessoalEntity
 @Dao
 interface NotaPessoalDao {
 
-    @Query("SELECT * FROM notas_pessoais_table ORDER BY id")
+    @Query("SELECT * FROM notas_pessoais_table ORDER BY id DESC")
     fun getTodasNotasPessoais(): LiveData<List<NotaPessoalEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -16,7 +16,6 @@ interface NotaPessoalDao {
     @Query("DELETE FROM notas_pessoais_table")
     suspend fun deleteAll()
 
-    //acrescentar um de delete e update
     @Delete
     suspend fun delete(notaPessoal: NotaPessoalEntity)
 
