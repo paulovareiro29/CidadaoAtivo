@@ -7,4 +7,6 @@
     <color name="itemBackground">#F3F3F3</color>
     <color name="editTextBackground">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="buttonColorPrimary">#00B2FF</color>
+    <color name="buttonTextPrimary">#FFFFFF</color>
 </resources>

@@ -14,4 +14,6 @@
     <string name="remover">Delete</string>
     <string name="editar">Edit</string>
     <string name="editarNotaPessoal">Edit personal note</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>

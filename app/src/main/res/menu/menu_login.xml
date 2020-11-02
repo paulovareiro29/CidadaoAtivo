@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_main_notasPessoais"
+        android:id="@+id/menu_login_notasPessoais"
         android:title="@string/notasPessoais"
         app:showAsAction="never">
     </item>
