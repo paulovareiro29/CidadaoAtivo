@@ -13,4 +13,6 @@
     <string name="remover">Remover</string>
     <string name="editar">Editar</string>
     <string name="editarNotaPessoal">Editar nota pessoal</string>
+    <string name="username">Utilizador</string>
+    <string name="password">Palavra-passe</string>
 </resources>
