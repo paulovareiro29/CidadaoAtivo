@@ -1,40 +1,39 @@
 package ipvc.estg.cidadaoativo
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 
-class LoginActivity : AppCompatActivity() {
+class AddLocationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_add_location)
     }
 
-    fun login(view: View) {
-        val intent = Intent(this,MapActivity::class.java)
-        startActivity(intent)
-    }
+    fun upload(view: View) {}
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean{
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_login, menu)
-        return true;
+        inflater.inflate(R.menu.menu_addlocation,menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
-            R.id.menu_login_notasPessoais -> {
-                val intent = Intent(this,NotasPessoais::class.java)
-                startActivity(intent)
+            R.id.menu_addlocation_guardar -> {
+
+
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
 }

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddLocationActivity"
+    android:padding="10dp">
+
+    <ImageView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:src="@drawable/locmarker"/>
+
+    <LinearLayout
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="40dp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:text="@string/localizacao"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/addLocationForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logo"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:background="@drawable/item_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="@string/coordenadas"/>
+        <EditText
+            android:id="@+id/addLocation_coordenadas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textAutoComplete"
+            android:textSize="18dp"
+            android:background="@drawable/edit_text_background"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="@string/descricao" />
+        <EditText
+            android:id="@+id/addLocation_descricao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:background="@drawable/edit_text_background"
+            />
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="upload">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:text="Upload "
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:text="@string/foto"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_add_24" />
+
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/addLocation_foto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

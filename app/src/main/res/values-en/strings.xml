@@ -16,4 +16,7 @@
     <string name="editarNotaPessoal">Edit personal note</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="coordenadas">Coordinates</string>
+    <string name="foto">Photo</string>
+    <string name="localizacao">Location</string>
 </resources>
