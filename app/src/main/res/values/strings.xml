@@ -20,4 +20,6 @@
     <string name="localizacao">Localização</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="title_activity_map">Mapa</string>
+    <string name="por">Por</string>
 </resources>

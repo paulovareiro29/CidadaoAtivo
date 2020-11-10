@@ -6,39 +6,57 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import ipvc.estg.cidadaoativo.api.EndPoints
 import ipvc.estg.cidadaoativo.api.Location
 import ipvc.estg.cidadaoativo.api.OutputPost
 import ipvc.estg.cidadaoativo.api.ServiceBuilder
-import ipvc.estg.cidadaoativo.entities.NotaPessoalEntity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MapActivity : AppCompatActivity() {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     val newLocationRequestCode = 1
+    private lateinit var mMap: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        /*val request = ServiceBuilder.buildService(EndPoints::class.java)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        refreshMap()
+    }
+
+    fun refreshMap(){
+        val request = ServiceBuilder.buildService(EndPoints::class.java)
         val call = request.getLocations()
 
         call.enqueue(object : Callback<List<Location>>{
             override fun onResponse(call: Call<List<Location>>, response: Response<List<Location>>){
                 if(response.isSuccessful){ //working
-                    /*for(entry in response.body()!!){
-                        Toast.makeText(this@MapActivity, "${entry.id} - ${entry.latitude} / ${entry.longitude}" ,Toast.LENGTH_LONG).show()
-                    }*/
+                    mMap.clear()
+                    for(entry in response.body()!!){
+                        val loc = LatLng(entry.latitude, entry.longitude)
+                        mMap.addMarker(MarkerOptions().position(loc).title("By: ${entry.user.username}"))
+                    }
                 }
             }
 
             override fun onFailure(call: Call<List<Location>>, t: Throwable){
                 Toast.makeText(this@MapActivity , "${t.message}", Toast.LENGTH_SHORT).show()
             }
-        })*/
-
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -57,9 +75,7 @@ class MapActivity : AppCompatActivity() {
 
             call.enqueue(object : Callback<OutputPost> {
                 override fun onResponse(call: Call<OutputPost>, response: Response<OutputPost>){
-                    if(response.isSuccessful){
-                        Toast.makeText(this@MapActivity, "SUCESS", Toast.LENGTH_LONG).show()
-                    }
+                    refreshMap()
                 }
 
                 override fun onFailure(call: Call<OutputPost>, t: Throwable){
@@ -71,12 +87,11 @@ class MapActivity : AppCompatActivity() {
 
     }
 
-
     fun getSingle(){
         val request = ServiceBuilder.buildService(EndPoints::class.java)
         val call = request.getLocationById(2) //no futuro é dinamico por clique
 
-        call.enqueue(object : Callback<Location>{
+        call.enqueue(object : Callback<Location> {
             override fun onResponse(call: Call<Location>, response: Response<Location>){
                 if(response.isSuccessful){ //working
                     val entry: Location = response.body()!!
@@ -94,5 +109,23 @@ class MapActivity : AppCompatActivity() {
     fun onFabClick(view: View) {
         val intent = Intent(this, AddLocationActivity::class.java)
         startActivityForResult(intent, newLocationRequestCode)
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        // Add a marker in Sydney and move the camera
+        /*val sydney = LatLng(-34.0, 151.0)
+        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
     }
 }

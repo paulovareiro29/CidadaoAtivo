@@ -53,18 +53,17 @@ class AddLocationActivity : AppCompatActivity() {
                     setResult(Activity.RESULT_CANCELED, replyIntent)
                     Toast.makeText(this,R.string.validacaoNotaPessoal,Toast.LENGTH_LONG).show()
                 }else{
-                    val longitude = editLatitude.text.toString().toDouble()
-                    val latitude = editLongitude.text.toString().toDouble()
+                    val latitude = editLatitude.text.toString().toDouble()
+                    val longitude = editLongitude.text.toString().toDouble()
                     val descricao = editDescricao.text.toString()
 
                     replyIntent.putExtra("longitude", longitude)
                     replyIntent.putExtra("latitude", latitude)
                     replyIntent.putExtra("descricao", descricao)
                     setResult(Activity.RESULT_OK, replyIntent)
-
                     finish()
-                }
 
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -4,8 +4,8 @@ import android.view.inspector.IntFlagMapping
 
 data class Location(
     val id: Int,
-    val latitude: Float,
-    val longitude: Float,
+    val latitude: Double,
+    val longitude: Double,
     val descricao: String,
     val photo: String,
     val user: User
