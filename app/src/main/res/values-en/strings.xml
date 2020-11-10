@@ -19,4 +19,6 @@
     <string name="coordenadas">Coordinates</string>
     <string name="foto">Photo</string>
     <string name="localizacao">Location</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
 </resources>
