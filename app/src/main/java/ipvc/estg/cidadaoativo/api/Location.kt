@@ -10,8 +10,3 @@ data class Location(
     val photo: String,
     val user: User
 )
-
-data class User(
-    val id: Int,
-    val username: String
-)

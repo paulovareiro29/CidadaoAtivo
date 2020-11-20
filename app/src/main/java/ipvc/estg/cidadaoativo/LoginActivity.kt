@@ -1,22 +1,78 @@
 package ipvc.estg.cidadaoativo
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
+import android.widget.Toast
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import ipvc.estg.cidadaoativo.api.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var editUsername: EditText
+    private lateinit var editPassword: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        editUsername = findViewById(R.id.login_editUsername)
+        editPassword = findViewById(R.id.login_editPassword)
+
+        val sharedPref: SharedPreferences = getSharedPreferences(
+            getString(R.string.preference_login_key), Context.MODE_PRIVATE
+        )
+
+        val user = sharedPref.getInt(getString(R.string.loginUsername), 0)
+
+        if(user != 0){
+            val intent = Intent(this,MapActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun login(view: View) {
+        val request = ServiceBuilder.buildService(EndPoints::class.java)
+        val call = request.login(editUsername.text.toString(), editPassword.text.toString())
+
+
         val intent = Intent(this,MapActivity::class.java)
-        startActivity(intent)
+
+        call.enqueue(object : Callback<UserPost> {
+            override fun onResponse(call: Call<UserPost>, response: Response<UserPost>){
+                if(response.isSuccessful){
+
+                    val id = response.body()!!.id!!.toInt()
+
+                    val sharedPref: SharedPreferences = getSharedPreferences(
+                        getString(R.string.preference_login_key), Context.MODE_PRIVATE)
+                    with (sharedPref.edit()){
+                        putInt(getString(R.string.loginUsername), id)
+                        commit()
+                    }
+
+                    startActivity(intent)
+                }else{
+                    editPassword.setError("")
+                    editUsername.setError("")
+                }
+            }
+
+            override fun onFailure(call: Call<UserPost>, t: Throwable){
+                Toast.makeText(this@LoginActivity , "${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean{

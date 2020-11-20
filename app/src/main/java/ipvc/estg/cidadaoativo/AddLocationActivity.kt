@@ -1,7 +1,9 @@
 package ipvc.estg.cidadaoativo
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -12,19 +14,21 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import ipvc.estg.cidadaoativo.api.EndPoints
-import ipvc.estg.cidadaoativo.api.Location
-import ipvc.estg.cidadaoativo.api.OutputPost
-import ipvc.estg.cidadaoativo.api.ServiceBuilder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
 
 class AddLocationActivity : AppCompatActivity() {
 
-    private lateinit var editLatitude: EditText
-    private lateinit var editLongitude: EditText
+    private lateinit var editLatitude: TextView
+    private lateinit var editLongitude: TextView
     private lateinit var editDescricao: EditText
+
+    private lateinit var lastLocation: android.location.Location
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var locationRequest: LocationRequest
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,42 @@ class AddLocationActivity : AppCompatActivity() {
         editLatitude = findViewById(R.id.addLocation_latitude)
         editLongitude = findViewById(R.id.addLocation_longitude)
         editDescricao = findViewById(R.id.addLocation_descricao)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                super.onLocationResult(p0)
+                lastLocation = p0.lastLocation
+                var loc = LatLng(lastLocation.latitude, lastLocation.longitude)
+
+                editLatitude.setText(loc.latitude.toString())
+                editLongitude.setText(loc.longitude.toString())
+            }
+        }
+
+        createLocationRequest()
+
+        if(ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 10
+            )
+            finish()
+            return
+        }else{
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        }
+
+    }
+
+    fun createLocationRequest(){
+        locationRequest = LocationRequest()
+        locationRequest.numUpdates = 1
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+
     }
 
     fun upload(view: View) {}

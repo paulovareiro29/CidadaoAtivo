@@ -35,10 +35,10 @@
             android:name=".MapActivity"
             android:label="@string/title_activity_map"></activity>
         <activity android:name=".AddLocationActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".CriarNotaPessoal" />
         <activity android:name=".NotasPessoais" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

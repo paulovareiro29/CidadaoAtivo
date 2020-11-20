@@ -50,13 +50,11 @@
             android:textSize="18dp"
             android:textStyle="bold"
             android:text="@string/latitude"/>
-        <EditText
+        <TextView
             android:id="@+id/addLocation_latitude"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textAutoComplete"
             android:textSize="18dp"
-            android:background="@drawable/edit_text_background"
             />
     </LinearLayout>
 
@@ -72,13 +70,11 @@
                 android:textSize="18dp"
                 android:textStyle="bold"
                 android:text="@string/longitude"/>
-            <EditText
+            <TextView
                 android:id="@+id/addLocation_longitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textAutoComplete"
                 android:textSize="18dp"
-                android:background="@drawable/edit_text_background"
                 />
         </LinearLayout>
 

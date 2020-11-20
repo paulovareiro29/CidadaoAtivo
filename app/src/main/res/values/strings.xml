@@ -22,4 +22,6 @@
     <string name="longitude">Longitude</string>
     <string name="title_activity_map">Mapa</string>
     <string name="por">Por</string>
+    <string name="preference_login_key">loginfile</string>
+    <string name="loginUsername">user</string>
 </resources>

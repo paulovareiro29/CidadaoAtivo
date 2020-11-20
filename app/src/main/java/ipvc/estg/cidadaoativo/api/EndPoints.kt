@@ -17,5 +17,10 @@ interface EndPoints {
                        @Field("longitude") longitude: Double,
                        @Field("descricao") descricao: String,
                        @Field("photo") photo: String,
-                       @Field("users_id") user_id: Int): Call<OutputPost>
+                       @Field("users_id") user_id: Int): Call<LocationPost>
+
+    @FormUrlEncoded
+    @POST("login")
+    fun login(@Field("username") username: String,
+              @Field("password") password: String): Call<UserPost>
 }

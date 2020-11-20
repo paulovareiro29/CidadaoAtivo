@@ -1,13 +1,21 @@
 package ipvc.estg.cidadaoativo
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
+
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -16,26 +24,52 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import ipvc.estg.cidadaoativo.api.EndPoints
 import ipvc.estg.cidadaoativo.api.Location
-import ipvc.estg.cidadaoativo.api.OutputPost
+import ipvc.estg.cidadaoativo.api.LocationPost
 import ipvc.estg.cidadaoativo.api.ServiceBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     val newLocationRequestCode = 1
     private lateinit var mMap: GoogleMap
+
+    private var user_id: Int = 0
+
+    private lateinit var lastLocation: android.location.Location
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var locationRequest: LocationRequest
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+        val sharedPref: SharedPreferences = getSharedPreferences(
+            getString(R.string.preference_login_key), Context.MODE_PRIVATE
+        )
+
+        user_id = sharedPref.getInt(getString(R.string.loginUsername), 0)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        refreshMap()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                super.onLocationResult(p0)
+                lastLocation = p0.lastLocation
+                refreshMap()
+            }
+        }
+
+        createLocationRequest()
+
+        //refreshMap()
     }
 
     fun refreshMap(){
@@ -48,7 +82,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     mMap.clear()
                     for(entry in response.body()!!){
                         val loc = LatLng(entry.latitude, entry.longitude)
-                        mMap.addMarker(MarkerOptions().position(loc).title("By: ${entry.user.username}"))
+                        if(calculateDistance(entry.latitude,entry.longitude,lastLocation.latitude,lastLocation.longitude) < 1000){
+                            mMap.addMarker(MarkerOptions().position(loc).title("${entry.id}"))
+                        }
+
+
                     }
                 }
             }
@@ -57,6 +95,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this@MapActivity , "${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Float{
+        val results = FloatArray(1)
+        android.location.Location.distanceBetween(lat1, lng1, lat2, lng2, results)
+
+        return results[0]
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -71,14 +116,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             val descricao = data.getStringExtra("descricao")
 
             val request = ServiceBuilder.buildService(EndPoints::class.java)
-            val call = request.createLocation(latitude,longitude,descricao,"photo",1)
+            val call = request.createLocation(latitude,longitude,descricao,"photo",user_id)
 
-            call.enqueue(object : Callback<OutputPost> {
-                override fun onResponse(call: Call<OutputPost>, response: Response<OutputPost>){
+            call.enqueue(object : Callback<LocationPost> {
+                override fun onResponse(call: Call<LocationPost>, response: Response<LocationPost>){
                     refreshMap()
                 }
 
-                override fun onFailure(call: Call<OutputPost>, t: Throwable){
+                override fun onFailure(call: Call<LocationPost>, t: Throwable){
                     Toast.makeText(this@MapActivity , "${t.message}", Toast.LENGTH_LONG).show()
                 }
             })
@@ -87,15 +132,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    fun getSingle(){
+    fun getSingle(id: Int){
         val request = ServiceBuilder.buildService(EndPoints::class.java)
-        val call = request.getLocationById(2) //no futuro é dinamico por clique
+        val call = request.getLocationById(id) //no futuro é dinamico por clique
 
         call.enqueue(object : Callback<Location> {
             override fun onResponse(call: Call<Location>, response: Response<Location>){
                 if(response.isSuccessful){ //working
                     val entry: Location = response.body()!!
-                    //Toast.makeText(this@MapActivity, "${entry.id} - ${entry.user.username} / ${entry.longitude}" ,Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MapActivity, "${entry.id} - ${entry.user.username} / ${entry.longitude}" ,Toast.LENGTH_LONG).show()
 
                 }
             }
@@ -122,10 +167,69 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        googleMap.setOnMarkerClickListener(this)
 
-        // Add a marker in Sydney and move the camera
-        /*val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
+        setUpMap()
     }
+
+    fun setUpMap(){
+        if(ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 10)
+
+            return
+        }else{
+
+            mMap.isMyLocationEnabled = true
+
+            fusedLocationClient.lastLocation.addOnSuccessListener(this){ location ->
+                if(location != null) {
+                    lastLocation = location
+
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+
+                    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+                }
+            }
+
+        }
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        getSingle(marker.title.toInt())
+        return true
+    }
+
+    fun createLocationRequest(){
+        locationRequest = LocationRequest()
+        locationRequest.interval = 10000
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean{
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_map, menu)
+        return true;
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId){
+            R.id.menu_map_logout -> {
+                val sharedPref: SharedPreferences = getSharedPreferences(
+                    getString(R.string.preference_login_key), Context.MODE_PRIVATE)
+                with (sharedPref.edit()){
+                    putInt(getString(R.string.loginUsername), 0)
+                    commit()
+                }
+
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
 }
