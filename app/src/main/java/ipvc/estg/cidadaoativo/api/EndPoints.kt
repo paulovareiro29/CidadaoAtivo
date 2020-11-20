@@ -23,4 +23,16 @@ interface EndPoints {
     @POST("login")
     fun login(@Field("username") username: String,
               @Field("password") password: String): Call<UserPost>
+
+    @DELETE("locations/{id}")
+    fun delete(@Path("id") id: Int): Call<Location>
+
+    @FormUrlEncoded
+    @PUT("locations/{id}")
+    fun updateLocation(@Path("id") id: Int,
+                       @Field("latitude") latitude: Double,
+                       @Field("longitude") longitude: Double,
+                       @Field("descricao") descricao: String,
+                       @Field("photo") photo: String,
+                       @Field("users_id") user_id: Int): Call<LocationPost>
 }

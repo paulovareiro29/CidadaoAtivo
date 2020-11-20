@@ -24,4 +24,5 @@
     <string name="por">Por</string>
     <string name="preference_login_key">loginfile</string>
     <string name="loginUsername">user</string>
+    <string name="criadoPor">Criador por</string>
 </resources>

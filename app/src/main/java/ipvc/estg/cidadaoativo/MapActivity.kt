@@ -5,17 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
+import android.view.*
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
-
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -70,6 +66,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         createLocationRequest()
 
         //refreshMap()
+    }
+
+    override fun onBackPressed() {
+
     }
 
     fun refreshMap(){
@@ -132,15 +132,162 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     }
 
+    fun popUpEditMarker(entry: Location){
+        val inflater: LayoutInflater =
+            getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView: View = inflater.inflate(R.layout.edit2_marker_popup, null)
+
+        // create the popup window
+        val width: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+        val focusable =
+            true // lets taps outside the popup also dismiss it
+
+        val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+
+        popupView.findViewById<TextView>(R.id.edit_marker_criadoPor_text).setText(entry.user.username)
+        popupView.findViewById<EditText>(R.id.edit_marker_descricao_text).setText(entry.descricao)
+
+
+        popupView.findViewById<ImageButton>(R.id.edit_marker_saveButton).setOnClickListener(object : View.OnClickListener{
+            override fun onClick(p0: View?) {
+                save(   entry.id,
+                        entry.latitude,
+                        entry.longitude,
+                        popupView.findViewById<EditText>(R.id.edit_marker_descricao_text).text.toString(),
+                        entry.user.id)
+
+                popupWindow.dismiss()
+            }
+        })
+
+    }
+
+    fun popUpSameUserMarker(entry: Location){
+        val inflater: LayoutInflater =
+            getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView: View = inflater.inflate(R.layout.edit_marker_popup, null)
+
+        // create the popup window
+        val width: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+        val focusable =
+            true // lets taps outside the popup also dismiss it
+
+        val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+
+        popupView.findViewById<TextView>(R.id.edit_marker_criadoPor_text).setText(entry.user.username)
+        popupView.findViewById<TextView>(R.id.edit_marker_descricao_text).setText(entry.descricao)
+
+        popupView.findViewById<ImageButton>(R.id.edit_marker_deleteButton).setOnClickListener(object : View.OnClickListener{
+            override fun onClick(p0: View?) {
+                delete(entry.id)
+                popupWindow.dismiss()
+            }
+        })
+
+        popupView.findViewById<ImageButton>(R.id.edit_marker_editButton).setOnClickListener(object : View.OnClickListener{
+            override fun onClick(p0: View?) {
+                popupWindow.dismiss()
+                popUpEditMarker(entry)
+            }
+        })
+    }
+
+    fun popUpMarker(entry: Location){
+        val inflater: LayoutInflater =
+            getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView: View = inflater.inflate(R.layout.marker_popup, null)
+
+        // create the popup window
+        val width: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+        val focusable =
+            true // lets taps outside the popup also dismiss it
+
+        val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+
+        popupView.findViewById<TextView>(R.id.edit_marker_criadoPor_text).setText(entry.user.username)
+        popupView.findViewById<TextView>(R.id.edit_marker_descricao_text).setText(entry.descricao)
+
+
+
+
+    }
+
+    fun save(id: Int, latitude: Double, longitude: Double, descricao: String, userId: Int){
+        val request = ServiceBuilder.buildService(EndPoints::class.java)
+        val call = request.updateLocation(id, latitude, longitude, descricao, "", userId)
+
+        call.enqueue(object : Callback<LocationPost> {
+            override fun onFailure(call: Call<LocationPost>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onResponse(call: Call<LocationPost>, response: Response<LocationPost>) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    fun delete(id: Int){
+        val request = ServiceBuilder.buildService(EndPoints::class.java)
+        val call = request.delete(id)
+
+        call.enqueue(object : Callback<Location> {
+            override fun onFailure(call: Call<Location>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<Location>, response: Response<Location>) {
+
+            }
+
+        })
+    }
+
     fun getSingle(id: Int){
         val request = ServiceBuilder.buildService(EndPoints::class.java)
-        val call = request.getLocationById(id) //no futuro é dinamico por clique
+        val call = request.getLocationById(id)
 
         call.enqueue(object : Callback<Location> {
             override fun onResponse(call: Call<Location>, response: Response<Location>){
                 if(response.isSuccessful){ //working
                     val entry: Location = response.body()!!
-                    Toast.makeText(this@MapActivity, "${entry.id} - ${entry.user.username} / ${entry.longitude}" ,Toast.LENGTH_LONG).show()
+
+                    if(user_id == entry.user.id){
+                        popUpSameUserMarker(entry)
+                    }else{
+                        popUpMarker(entry)
+                    }
+
+
+
 
                 }
             }

@@ -25,4 +25,5 @@
     <string name="por">By</string>
     <string name="preference_login_key">loginfile</string>
     <string name="loginUsername">user</string>
+    <string name="criadoPor">Created by</string>
 </resources>
