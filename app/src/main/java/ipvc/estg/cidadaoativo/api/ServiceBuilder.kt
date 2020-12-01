@@ -8,7 +8,7 @@ object ServiceBuilder {
     private val client = OkHttpClient.Builder().build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.1.9:80/api-pmeu/")
+        .baseUrl("http://192.168.1.6:80/api-pmeu/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()

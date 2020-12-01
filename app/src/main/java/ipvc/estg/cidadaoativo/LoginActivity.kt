@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -17,6 +18,7 @@ import ipvc.estg.cidadaoativo.api.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.security.MessageDigest
 
 class LoginActivity : AppCompatActivity() {
 
@@ -42,10 +44,18 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun hashString(type: String, input: String) =
+        MessageDigest
+            .getInstance(type)
+            .digest(input.toByteArray())
+            .map { String.format("%02X", it) }
+            .joinToString(separator = "")
+
     fun login(view: View) {
         val request = ServiceBuilder.buildService(EndPoints::class.java)
-        val call = request.login(editUsername.text.toString(), editPassword.text.toString())
+        val call = request.login(editUsername.text.toString(), hashString("SHA-1",editPassword.text.toString()))
 
+        Toast.makeText(this@LoginActivity , hashString("SHA-1",editPassword.text.toString()), Toast.LENGTH_LONG).show()
 
         val intent = Intent(this,MapActivity::class.java)
 

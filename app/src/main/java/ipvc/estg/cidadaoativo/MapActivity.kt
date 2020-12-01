@@ -1,5 +1,6 @@
 package ipvc.estg.cidadaoativo
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -66,6 +68,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         createLocationRequest()
 
         //refreshMap()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startLocationUpdates()
     }
 
     override fun onBackPressed() {
@@ -337,11 +349,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     val currentLatLng = LatLng(location.latitude, location.longitude)
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
 
-                    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+                    startLocationUpdates()
                 }
             }
 
         }
+    }
+
+    fun startLocationUpdates() {
+        if(ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -354,6 +372,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         locationRequest.interval = 10000
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean{
         val inflater: MenuInflater = menuInflater
