@@ -26,4 +26,8 @@
     <string name="preference_login_key">loginfile</string>
     <string name="loginUsername">user</string>
     <string name="criadoPor">Created by</string>
+    <string name="geofence_entered">There\'s a problem near you!</string>
+    <string name="preference_settings_key">settingsfile</string>
+    <string name="ativar_notificacoes">Enable notifications</string>
+    <string name="desativar_notificacoes">Disable notifications</string>
 </resources>

@@ -6,17 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -24,15 +26,19 @@ import ipvc.estg.cidadaoativo.api.EndPoints
 import ipvc.estg.cidadaoativo.api.Location
 import ipvc.estg.cidadaoativo.api.LocationPost
 import ipvc.estg.cidadaoativo.api.ServiceBuilder
+import ipvc.estg.cidadaoativo.geofence.GeofenceHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     val newLocationRequestCode = 1
+
     private lateinit var mMap: GoogleMap
 
     private var user_id: Int = 0
+
+    private lateinit var settingsPreferences: SharedPreferences
 
     private lateinit var lastLocation: android.location.Location
     private lateinit var locationCallback: LocationCallback
@@ -40,9 +46,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private lateinit var geofencingClient: GeofencingClient
+    private lateinit var geofenceHelper: GeofenceHelper
+
+    private val GEOFENCE_RADIUS: Float = 100.0F
+
+    private val geofenceList = mutableListOf<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+         settingsPreferences = getSharedPreferences(
+            getString(R.string.preference_settings_key), Context.MODE_PRIVATE
+        )
 
         val sharedPref: SharedPreferences = getSharedPreferences(
             getString(R.string.preference_login_key), Context.MODE_PRIVATE
@@ -64,6 +81,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 refreshMap()
             }
         }
+        geofencingClient = LocationServices.getGeofencingClient(this)
+        geofenceHelper = GeofenceHelper(this)
 
         createLocationRequest()
 
@@ -96,6 +115,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                         val loc = LatLng(entry.latitude, entry.longitude)
                         if(calculateDistance(entry.latitude,entry.longitude,lastLocation.latitude,lastLocation.longitude) < 1000){
                             mMap.addMarker(MarkerOptions().position(loc).title("${entry.id}"))
+                            addCircle(loc, GEOFENCE_RADIUS)
+
+                            if(!geofenceAlreadyExists("${entry.id}")) {
+                                geofenceList.add("${entry.id}")
+                                addGeofence("${entry.id}", loc, GEOFENCE_RADIUS)
+                            }
                         }
 
 
@@ -107,6 +132,46 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 Toast.makeText(this@MapActivity , "${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun geofenceAlreadyExists(id: String) : Boolean {
+        for(geo in geofenceList){
+            if(geo == id){
+                return true
+            }
+        }
+        return false
+    }
+
+    fun addGeofence(id: String, latlng: LatLng, radius: Float){
+        val geofence = geofenceHelper.getGeofence(id, latlng,radius, Geofence.GEOFENCE_TRANSITION_ENTER)
+        val geofencingRequest = geofenceHelper.getGeofencingRequest(geofence)
+        val pendingIntent = geofenceHelper.getPendingIntent()
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        geofencingClient.addGeofences(geofencingRequest, pendingIntent)
+            .addOnSuccessListener{
+                Log.d("MapActivity", "onSuccess: Geofence Added...")
+            }
+            .addOnFailureListener {
+                val errorMessage = geofenceHelper.getErrorString(it)
+                Log.d("MapActivity", "onFailure: " + errorMessage)
+            }
+    }
+
+    fun addCircle(latlng: LatLng, radius: Float){
+        val circleOptions = CircleOptions()
+        circleOptions.center(latlng)
+        circleOptions.radius(radius.toDouble())
+        circleOptions.strokeColor(Color.argb(255,255,0,0))
+        circleOptions.fillColor(Color.argb(64,255,0,0))
+        circleOptions.strokeWidth(4F)
+        mMap.addCircle(circleOptions)
     }
 
     fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Float{
@@ -298,9 +363,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                         popUpMarker(entry)
                     }
 
-
-
-
                 }
             }
 
@@ -338,8 +400,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 10)
 
             return
-        }else{
+        }
 
+        if(ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION), 20
+            )
+
+            return
+        }
+
+        
             mMap.isMyLocationEnabled = true
 
             fusedLocationClient.lastLocation.addOnSuccessListener(this){ location ->
@@ -353,7 +426,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 }
             }
 
-        }
+
     }
 
     fun startLocationUpdates() {
@@ -375,10 +448,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
 
 
+
+
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean{
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_map, menu)
         return true;
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val activated = settingsPreferences.getBoolean("notifications", false)
+
+        if(activated) {
+            menu.findItem(R.id.menu_map_notification).setTitle(R.string.desativar_notificacoes)
+        }
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -394,9 +480,32 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 finish()
                 true
             }
+            R.id.menu_map_notification -> {
+                val activated = settingsPreferences.getBoolean("notifications",false)
+                if(activated){
+                    settingsPreferences
+                    with (settingsPreferences.edit()){
+                        putBoolean("notifications", false)
+                        commit()
+                    }
+                    Toast.makeText(this,"Notificações desativadas", Toast.LENGTH_SHORT).show()
+                    item.setTitle(R.string.ativar_notificacoes)
+
+                }else{
+                    settingsPreferences
+                    with (settingsPreferences.edit()){
+                        putBoolean("notifications", true)
+                        commit()
+                    }
+                    Toast.makeText(this,"Notificações ativadas", Toast.LENGTH_SHORT).show()
+                    item.setTitle(R.string.desativar_notificacoes)
+                }
+
+                true
+
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
 }
