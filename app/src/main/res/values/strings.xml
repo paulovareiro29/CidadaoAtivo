@@ -25,4 +25,9 @@
     <string name="preference_login_key">loginfile</string>
     <string name="loginUsername">user</string>
     <string name="criadoPor">Criador por</string>
+    <string name="geofence_entered">Existe um problema perto de si!</string>
+    <string name="preference_settings_key">settingsfile</string>
+    <string name="ativar_notificacoes">Ativar notificações</string>
+    <string name="desativar_notificacoes">Desativar notificações</string>
+    <string name="geofence_exited">Saiu da zona de um problema!</string>
 </resources>
