@@ -30,4 +30,5 @@
     <string name="preference_settings_key">settingsfile</string>
     <string name="ativar_notificacoes">Enable notifications</string>
     <string name="desativar_notificacoes">Disable notifications</string>
+    <string name="geofence_exited">You left a problem zone!</string>
 </resources>

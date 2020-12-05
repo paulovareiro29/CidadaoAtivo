@@ -29,4 +29,5 @@
     <string name="preference_settings_key">settingsfile</string>
     <string name="ativar_notificacoes">Ativar notificações</string>
     <string name="desativar_notificacoes">Desativar notificações</string>
+    <string name="geofence_exited">Saiu da zona de um problema!</string>
 </resources>

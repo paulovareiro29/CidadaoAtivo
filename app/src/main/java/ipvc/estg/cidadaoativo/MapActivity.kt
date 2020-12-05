@@ -7,9 +7,15 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -31,7 +37,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
     val newLocationRequestCode = 1
 
     private lateinit var mMap: GoogleMap
@@ -53,9 +59,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     private val geofenceList = mutableListOf<String>()
 
+    private lateinit var sensorManager: SensorManager
+
+    private lateinit var sensorAccelerometer: Sensor
+    private lateinit var sensorMagneticField: Sensor
+    private lateinit var sensorTemperature: Sensor
+
+    private var mGravity = FloatArray(3)
+    private var mGeoMagnetic = FloatArray(3)
+
+    private var azimuth = 0f
+    private var currectAzimuth = 0f
+
+    private lateinit var pointer: ImageView
+    private lateinit var temperatureTextView: TextView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
 
          settingsPreferences = getSharedPreferences(
             getString(R.string.preference_settings_key), Context.MODE_PRIVATE
@@ -86,7 +109,85 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
         createLocationRequest()
 
-        //refreshMap()
+        //sensores
+        pointer = findViewById<ImageView>(R.id.pointer)
+        temperatureTextView = findViewById<TextView>(R.id.map_temperatura)
+
+        sensorManager= getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
+
+        val temperatureListener = object: SensorEventListener {
+            override fun onAccuracyChanged(p0: Sensor, p1: Int) {
+
+            }
+
+            override fun onSensorChanged(event: SensorEvent) {
+                temperatureTextView.text = "${event.values[0]}ºC"
+            }
+
+        }
+
+        val accelerometerListener = object: SensorEventListener {
+            override fun onAccuracyChanged(p0: Sensor, p1: Int) {
+
+            }
+
+            override fun onSensorChanged(event: SensorEvent) {
+                var alpha = 0.97f
+                mGravity[0] = alpha*mGravity[0]+(1-alpha)*event.values[0]
+                mGravity[1] = alpha*mGravity[1]+(1-alpha)*event.values[1]
+                mGravity[2] = alpha*mGravity[2]+(1-alpha)*event.values[2]
+
+                UpdateBussula()
+            }
+
+        }
+
+        val magneticFieldListener = object: SensorEventListener {
+            override fun onAccuracyChanged(p0: Sensor, p1: Int) {
+
+            }
+
+            override fun onSensorChanged(event: SensorEvent) {
+                var alpha = 0.97f
+                mGeoMagnetic[0] = alpha*mGeoMagnetic[0]+(1-alpha)*event.values[0]
+                mGeoMagnetic[1] = alpha*mGeoMagnetic[1]+(1-alpha)*event.values[1]
+                mGeoMagnetic[2] = alpha*mGeoMagnetic[2]+(1-alpha)*event.values[2]
+
+                UpdateBussula()
+            }
+
+        }
+
+        sensorManager.registerListener(accelerometerListener, sensorAccelerometer ,SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(magneticFieldListener, sensorMagneticField ,SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(temperatureListener, sensorTemperature ,SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    fun UpdateBussula () {
+        var R = FloatArray(9)
+        var I = FloatArray(9)
+        var success: Boolean = SensorManager.getRotationMatrix(R,I,mGravity,mGeoMagnetic)
+        if(success) {
+
+
+            var orientation = FloatArray(3)
+            SensorManager.getOrientation(R,orientation)
+            azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
+            azimuth = (azimuth+360)%360
+
+            var anim: Animation = RotateAnimation(-currectAzimuth,-azimuth,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f)
+            currectAzimuth = azimuth
+
+            anim.duration = 100
+            anim.repeatCount = 0
+            anim.fillAfter = true
+
+            Log.d("TAAAG", "${azimuth}")
+            pointer.startAnimation(anim)
+        }
     }
 
     override fun onPause() {
@@ -144,7 +245,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     fun addGeofence(id: String, latlng: LatLng, radius: Float){
-        val geofence = geofenceHelper.getGeofence(id, latlng,radius, Geofence.GEOFENCE_TRANSITION_ENTER)
+        val geofence = geofenceHelper.getGeofence(id, latlng,radius, Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
         val geofencingRequest = geofenceHelper.getGeofencingRequest(geofence)
         val pendingIntent = geofenceHelper.getPendingIntent()
         if (ActivityCompat.checkSelfPermission(
@@ -507,5 +608,5 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             else -> super.onOptionsItemSelected(item)
         }
     }
-
+    
 }
